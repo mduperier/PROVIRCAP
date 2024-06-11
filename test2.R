@@ -29,7 +29,7 @@ print(nombre_observations)
 head(data$token)
 print(data$submitdate[1:20])
 print(data$Emp_sec[1:20])
-print(data$Emp_statut_rec[1:20])
+print(data$Emp_statut_rec3[1:20])
 
 
 #Comprendre les variables recodées: Prem_rse_annee_rec
@@ -186,7 +186,25 @@ ggplot(filtered_data, aes(x = Type_etudsup, y = percentage)) +
 
 #Discipline du cursus:
 
+filtered_data <- data %>%
+  mutate(Spe_etudsup= case_when(
+    Spe_etudsup == "Sciences humaines et sociales (histoire, sociologie, philosophie, psychologie, sciences politiques, ...)" ~ "Sciences humaines et sociales",
+    TRUE ~ Spe_etudsup
+  )) %>%
+  filter(!is.na(Spe_etudsup)) %>%
+  group_by(Spe_etudsup) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100)
 
+ggplot(filtered_data, aes(x = Spe_etudsup, y = percentage)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            vjust = -0.5) +  
+  labs(title = "Discipline du cursus",
+       x = "spécialité",
+       y = "Pourcentage") +
+  theme_minimal() +
+  coord_flip()
 
 #Statut d'emploi
 data <- data %>%
@@ -203,6 +221,122 @@ ggplot(data, aes(x = Emp_cont_short)) +
        y = "Nombre d'observations") +
   theme_minimal() +
   coord_flip()
+
+#Type de cadre
+
+filtered_data <- data %>%
+  filter(!is.na(cadre_inout)) %>%
+  group_by(cadre_inout) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+ggplot(filtered_data, aes(x = cadre_inout, y = percentage)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            vjust = -0.5) +  # Ajuste la position verticale des étiquettes
+  labs(title = "type de cadre",
+       x = "",
+       y = "Pourcentage") +
+  theme_minimal() 
+
+#type d'emploi des consultant.es
+
+df_filtered <- data %>% 
+  filter(Emp_cons == "Oui")
+
+df_filtered <- df_filtered %>%
+  mutate(emp_cont_grouped = ifelse(Emp_cont == "Statut d'indépendant·e (Auto-entrepreneur·se, portage salarial, société unipersonnelle...)", "freelance", 
+                                   ifelse(Emp_cont %in% c("CDD", "CDI"), "CDD/CDI", NA)))
+
+ggplot(df_filtered, aes(x = emp_cont_grouped)) +
+  geom_bar() +
+  labs(title = "Répartition des types de contrats",
+       x = "Type de contrat",
+       y = "Nombre d'observations")
+
+
+filtered_data <- df_filtered %>%
+  filter(!is.na(emp_cont_grouped)) %>%
+  group_by(emp_cont_grouped) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100)
+ggplot(filtered_data, aes(x = emp_cont_grouped, y = percentage)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            vjust = -0.5) +  # Ajuste la position verticale des étiquettes
+  labs(title = "type de cadre",
+       x = "",
+       y = "Pourcentage") +
+  theme_minimal() 
+
+#Niveau hiérarchique 
+filtered_data <- data %>%
+  filter(!is.na(Emp_statut)) %>%
+  group_by(Emp_statut) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100)
+ggplot(filtered_data, aes(x = Emp_statut, y = percentage)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            vjust = -0.5) +  # Ajuste la position verticale des étiquettes
+  labs(title = "type de cadre",
+       x = "",
+       y = "Pourcentage") +
+  theme_minimal() 
+
+#Tableau descriptif de l'âge selon les différents postes
+descriptives <- data %>%
+  group_by(Emp_statut) %>%
+  summarise(
+    mean_age = mean(age, na.rm = TRUE),
+    min_age = min(age, na.rm = TRUE),
+    max_age = max(age, na.rm = TRUE),
+    sd_age = sd(age, na.rm = TRUE)
+  )
+
+print(descriptives)
+
+#Niveau hiérarchique simplifié :
+filtered_data <- data %>%
+  filter(!is.na(Emp_statut_rec2)) %>%
+  group_by(Emp_statut_rec2) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100)
+ggplot(filtered_data, aes(x = Emp_statut_rec2, y = percentage)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            vjust = -0.5) +  # Ajuste la position verticale des étiquettes
+  labs(title = "type de cadre",
+       x = "",
+       y = "Pourcentage") +
+  theme_minimal()
+
+#Un escalator de verre? Emp_statut_rec3
+
+gender_distribution <- data %>%
+  filter(!is.na(Emp_statut_rec3))%>%
+  filter(!is.na(Genre)) %>%
+  group_by(Emp_statut_rec3, Genre) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100) %>%
+  ungroup()
+
+ggplot(gender_distribution, aes(x = Emp_statut_rec3, y = percentage, fill = Genre)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Répartition du Genre par Statut d'Emploi",
+       x = "Statut d'Emploi",
+       y = "Pourcentage",
+       fill = "Genre") +
+  theme_minimal()
+
+
+
+
+
+
+
+
 
 
 #Type d'organisation employeuse 
@@ -260,7 +394,8 @@ ggplot(data, aes(x = Prem_rse_annee_rec)) +
        y = "Nombre d'observations") +
   theme_minimal()
 
-
+unique_values <- unique(data$Emp_cont)
+print(unique_values)
 
 
 
