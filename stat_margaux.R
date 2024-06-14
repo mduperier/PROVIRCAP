@@ -204,6 +204,6 @@ p<-ggplot(distribution, aes(x = Emp_statut_rec3, y = percentage, fill = Rse_miss
   theme_minimal()
 
 print(p)
-ggsave(filename = "mission_hiérarchie2.png", plot = p, width = 8, height = 6)
+ggsave(filename = "mission_hiérarchie3.png", plot = p, width = 8, height = 6)
 
 
