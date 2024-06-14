@@ -1,0 +1,17 @@
+"Rse_miss"	"n"
+"Ressources humaines"	56
+"Opérations"	38
+"Risk Management"	31
+"Communication"	23
+"Stratégie"	22
+"Finance"	20
+"Affaires publiques"	13
+"Marketing"	10
+"Direction"	9
+"Environnement"	9
+"Affaires juridiques"	8
+"Transverse"	7
+"Conseil"	4
+"Transformation"	3
+"Levée de fonds"	2
+"Philanthropie"	2

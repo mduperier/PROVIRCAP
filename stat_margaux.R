@@ -105,10 +105,9 @@ ggsave(filename = "mission_hiérarchie.png", plot = p, width = 8, height = 6)
 #Ok, maitenant on va s'intéresser à ce qu'il y a dans la variable Rse_miss_other
 data <- read.csv("data_assoquest_recoded_fmt.csv")
 
-other_data <- data %>%  
-  filter(!is.na(Rse_miss_other))
-
-print(other_data$Rse_miss_other[1:50])
+#Avant traitement, on avait 116 données manquantes
+missing_count <- sum(is.na(data$Rse_miss))
+print(missing_count)
 
 
 # Charger les packages nécessaires
@@ -129,8 +128,14 @@ update_rse_miss <- function(df) {
     mutate(Rse_miss = case_when(
       str_detect(Rse_miss_other_cleaned, "strategi") ~ "Stratégie",
       str_detect(Rse_miss_other_cleaned, "transformation") ~ "Transformation",
-      str_detect(Rse_miss_other_cleaned, "environnement|durable|energ")~"Environnement",
-      TRUE ~ Rse_miss
+      str_detect(Rse_miss_other_cleaned, "environnement|durable|energ|sustainability")~"Environnement",
+      str_detect(Rse_miss_other_cleaned, "conseil|consult")~"Conseil",
+      str_detect(Rse_miss_other_cleaned, "transvers|tous|toutes")~"Transverse",
+      str_detect(Rse_miss_other_cleaned, "direct|responsable|adjointe")~"Direction",
+      str_detect(Rse_miss_other_cleaned, "levee de fonds")~"Levée de fonds",
+      str_detect(Rse_miss_other_cleaned, "philanthropie")~"Philanthropie",
+      is.na(Rse_miss_other)~Rse_miss,
+      TRUE ~ "Autre"
     )) %>%
     select(-Rse_miss_other_cleaned)  # Supprimer la colonne nettoyée temporaire
   return(df)
@@ -142,14 +147,63 @@ data <- update_rse_miss(data)
 unique_values <- unique(data$Rse_miss)
 print(unique_values)
 
+
+filtered_data <- data %>%
+  filter(is.na(Rse_miss)) %>%
+  filter(!is.na(Rse_miss_other))%>%
+  select(Rse_miss_other)
+# Afficher le résultat
+print(filtered_data)
+
+#On regarde combien on a de données manquantes maintenant
+missing_count <- sum(is.na(data$Rse_miss))
+print(missing_count)
+#fin du traitement: on a 58 données manquantes
+
+summary_table <- data %>%
+  filter(!is.na(Rse_miss)) %>%  # Filtrer les valeurs non NA
+  count(Rse_miss) %>%  # Compter les occurrences de chaque valeur unique
+  arrange(desc(n))
+
+# Afficher le résultat
+print(summary_table)
+
+write.table(summary_table, "Rse_miss.txt", sep = "\t", row.names = FALSE)
+
 p<- ggplot(data, aes(x = Rse_miss, fill=Rse_miss)) +
   geom_bar() +
   labs(title = "Types de missions",
        x = "",
        y = "Nombre d'observations")+
   theme_minimal()+
-  scale_fill_brewer(palette = "Set3")+
+  scale_fill_viridis(discrete = TRUE, option = "D") +
   theme(legend.position = "none")+
   coord_flip()
 
 print(p)
+
+install.packages("viridis")
+library(viridis)
+
+
+distribution <- data %>%
+  filter(!is.na(Emp_statut_rec3))%>%
+  filter(Rse_miss!="NA") %>%
+  group_by(Emp_statut_rec3, Rse_miss) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100) %>%
+  ungroup()
+
+p<-ggplot(distribution, aes(x = Emp_statut_rec3, y = percentage, fill = Rse_miss)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Répartition des missions par Statut d'Emploi",
+       x = "Statut d'Emploi",
+       y = "Pourcentage",
+       fill = "Type de mission") +
+  theme_minimal()
+
+print(p)
+ggsave(filename = "mission_hiérarchie2.png", plot = p, width = 8, height = 6)
+
+
