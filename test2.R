@@ -11,6 +11,8 @@ if(!require(ggplot2)){
   library(ggplot2)
 }
 
+
+
 #Afficher les noms des colonnes
 colonnes <- names(data)
 print(colonnes)
