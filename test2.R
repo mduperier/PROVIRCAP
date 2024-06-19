@@ -31,7 +31,7 @@ print(nombre_observations)
 head(data$token)
 print(data$submitdate[1:20])
 print(data$Emp_sec[1:20])
-print(data$Emp_statut_rec3[1:20])
+print(data$Dep_rse3_1[1:20])
 
 
 #Comprendre les variables recodées: Prem_rse_annee_rec
