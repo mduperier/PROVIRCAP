@@ -412,8 +412,6 @@ write.table(descriptives, "tableau.txt", sep = "\t", row.names = FALSE)
 
 
 
-
-
 #Niveau hiérarchique simplifié :
 filtered_data <- data %>%
   filter(!is.na(Emp_statut_rec2)) %>%

@@ -480,3 +480,58 @@ p<-ggplot(distribution, aes(x = Emp_statut_bin_rec, y = percentage, fill = Rse_o
 print(p)
 
 ggsave(filename = "critiques_cadre.png", plot = p, width = 8, height = 6)
+
+
+#thèmes abordés selon le secteur d'activité
+
+library(tidyverse)
+
+
+# Reshape les données pour créer la variable "mission"
+data_long <- data %>%
+  pivot_longer(cols = starts_with("Dep_rse3_"), 
+               names_to = "mission", 
+               values_to = "value") %>%
+  filter(value == "Oui") %>%
+  select(-value)
+
+# Ajouter une colonne "mission" avec les valeurs "miss_1", "miss_2", ..., "miss_7"
+data_long$mission <- sub("Dep_rse3_", "", data_long$mission)
+
+# Calculer la répartition des missions par secteur d'activité
+mission_counts <- data_long %>%
+  group_by(Org_sec, mission) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+mission_labels <- c("1" = "Environnement", 
+                    "2" = "Qualité de vie au travail", 
+                    "3" = "Diversité et inclusion", 
+                    "4" = "Investissement responsable", 
+                    "5" = "Mécénat", 
+                    "6" = "Droits humains", 
+                    "7" = "Ethique et conformité")
+
+data_long$mission <- factor(data_long$mission, levels = names(mission_labels), labels = mission_labels)
+
+# Calculer la répartition des missions par secteur d'activité
+mission_counts <- data_long %>%
+  group_by(Org_sec, mission) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+# Tracer le diagramme en bâtons empilés avec des pourcentages
+p<-ggplot(mission_counts, aes(x = Org_sec, y = count, fill = mission)) +
+  geom_bar(stat = "identity", position = "fill") +  # Utilise 'fill' pour des pourcentages
+  scale_y_continuous(labels = scales::percent_format()) +  # Affiche les étiquettes de l'axe y en pourcentages
+  scale_fill_manual(values = rainbow(7)) +  # Choisissez les couleurs que vous préférez
+  labs(title = "Répartition des missions par secteur d'activité en pourcentage",
+       x = "Secteur d'activité",
+       y = "Pourcentage",
+       fill = "Mission") +
+  theme_minimal()+
+  coord_flip()
+print(p)
+
+ggsave(filename = "test.png", plot = p, width = 15, height = 10)
+
