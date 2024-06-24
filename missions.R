@@ -215,3 +215,28 @@ generate_distribution_plot(combined_data, "Rse_ong_milit_rec", "ong_miss.png")
 
 #Acteurs clés
 generate_distribution_plot(combined_data, "Acteurs_clés_rse", "acteurs_miss.png")
+
+#satisfait rémuniération 
+generate_distribution_plot(combined_data, "Rem_satisf", "rem_satisf_miss.png")
+
+#inégalités importantes, à tester avec d'autres inégalités par exemple
+generate_distribution_plot(combined_data, "Ineg_imp_1", "ineg_rev_miss.png")
+
+#se sentetn-ils favorisés?
+generate_distribution_plot(combined_data, "Ineg_fav_2", "fav_patrimoine_miss.png")
+generate_distribution_plot(combined_data, "Ineg_fav_3", "fav_emploi_miss.png")
+
+#lieu de vie
+generate_distribution_plot(combined_data, "Lieu_vie", "lieu_vie_miss.png")
+
+#statut_soc_pres: statut social
+generate_distribution_plot(combined_data, "Statut_soc_pres", "statut_miss.png")
+generate_distribution_plot(combined_data, "Statut_soc_passe", "statut_passe_miss.png")
+
+#religion
+generate_distribution_plot(combined_data, "Relig", "relig_miss.png")
+
+#position politique
+generate_distribution_plot(combined_data, "Pol_pos_SQ001", "politique_miss.png")
+
+
