@@ -221,6 +221,17 @@ generate_distribution_plot(combined_data, "Rem_satisf", "rem_satisf_miss.png")
 
 #inégalités importantes, à tester avec d'autres inégalités par exemple
 generate_distribution_plot(combined_data, "Ineg_imp_1", "ineg_rev_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_2", "ineg_patri_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_3", "ineg_emploi_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_4", "ineg_etudes_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_5", "ineg_soins_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_6", "ineg_risques_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_7", "ineg_ethnique_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_8", "ineg_hf_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_9", "ineg_jeunes_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_10", "ineg_insécurité_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_11", "ineg_logement_miss.png")
+generate_distribution_plot(combined_data, "Ineg_imp_12", "ineg_pénible_miss.png")
 
 #se sentetn-ils favorisés?
 generate_distribution_plot(combined_data, "Ineg_fav_2", "fav_patrimoine_miss.png")
