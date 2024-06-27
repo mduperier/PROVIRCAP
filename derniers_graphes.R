@@ -324,3 +324,47 @@ p<-ggplot(distribution, aes(x = Org_type, y = percentage, fill = Rse_ong_milit_r
 print(p)
 ggsave(filename = "ong_org.png", plot = p, width = 8, height = 6)
 
+
+# Charger les bibliothèques nécessaires
+# Exemple de dataframe
+# data <- data.frame(Rem_annuel = ..., Rem_satisf = ...)
+
+# Vérifier et nettoyer les données
+data <- data %>%
+  filter(!is.na(Rem_annuel)) %>% 
+  mutate(Rem_annuel = as.numeric(Rem_annuel))
+  
+  # Vérifier les valeurs minimales et maximales de Rem_annuel
+min_salary <- min(data$Rem_annuel, na.rm = TRUE)
+max_salary <- max(data$Rem_annuel, na.rm = TRUE)
+
+# Créer des intervalles de salaire
+data <- data %>%
+  mutate(Salary_interval = cut(Rem_annuel, breaks = seq(min_salary, max_salary, by = 10000), include.lowest = TRUE))
+
+print(data$Salary_interval[1:20])
+
+distribution <- data %>%
+  filter(!is.na(Salary_interval)) %>%
+  filter(!is.na(Rem_satisf)) %>%
+  group_by(Salary_interval, Rem_satisf) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  group_by(Salary_interval) %>%
+  mutate(total_count = sum(count)) %>%
+  filter(total_count >= 10) %>%
+  mutate(percentage = count / sum(count) * 100) %>%
+  ungroup() %>%
+  select(-total_count)
+
+p<-ggplot(distribution, aes(x = Salary_interval, y = percentage, fill = Rem_satisf)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Satisfaction selon la tranche de salaire",
+       x = "Salaire",
+       y = "Pourcentage",
+       fill = "Satisfaction") +
+  theme_minimal()+
+  coord_flip()
+
+print(p)
+ggsave(filename = "final_obs.png", plot = p, width = 8, height = 6)
