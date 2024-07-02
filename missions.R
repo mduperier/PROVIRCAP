@@ -250,4 +250,16 @@ generate_distribution_plot(combined_data, "Relig", "relig_miss.png")
 #position politique
 generate_distribution_plot(combined_data, "Pol_pos_SQ001", "politique_miss.png")
 
+#trav_avis_
+generate_distribution_plot(combined_data, "Trav_avis_1", "trav1.png")
+generate_distribution_plot(combined_data, "Trav_avis_2", "trav2.png")
+generate_distribution_plot(combined_data, "Trav_avis_3", "trav3.png")
+generate_distribution_plot(combined_data, "Trav_avis_4", "trav4.png")
+generate_distribution_plot(combined_data, "Trav_avis_5", "trav5.png")
+generate_distribution_plot(combined_data, "Trav_avis_6", "trav6.png")
+generate_distribution_plot(combined_data, "Trav_avis_7", "trav7.png")
+generate_distribution_plot(combined_data, "Trav_avis_8", "trav8.png")
+generate_distribution_plot(combined_data, "Trav_avis_9", "trav9.png")
+generate_distribution_plot(combined_data, "Trav_avis_10", "trav10.png")
+generate_distribution_plot(combined_data, "Trav_avis_11", "trav11.png")
 
