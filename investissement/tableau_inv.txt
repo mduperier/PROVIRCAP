@@ -1,0 +1,8 @@
+"Emp_statut"	"mean_age"	"min_age"	"max_age"	"sd_age"
+"Chargé·e de mission"	29.2307692307692	22	51	7.84382821239993
+"Chargé·e d’études"	22	22	22	NA
+"Chef·fe de projet"	36	31	39	3.82970843102535
+"Directeur·trice"	46.3125	36	55	5.22454144718303
+"Responsable"	43.9090909090909	27	65	10.7831839582313
+"Senior Vice-Président·e (SVP)"	47	47	47	NA
+NA	40.1	27	64	11.608904628201
