@@ -14,6 +14,12 @@ data_dh <- data %>%
     TRUE ~ mission))
 print(data_dh$mission[1:20])
 
+#Afficher combien il y a d'observations
+nombre_observations <- nrow(data_dh)
+print(nombre_observations)
+#il y a 62 observations au total
+#(62 personnes qui ont déclaré traiter de cette thématique dans leur mission)
+
 ## STATISTIQUES DECRIPTIVES
 
 # Variable de genre
@@ -25,7 +31,8 @@ p <- ggplot(data_dh, aes(x = Genre, fill=Genre)) +
        x = "Genre",
        y = "Nombre d'observations") +
   scale_fill_brewer(palette = "Accent")+
-  theme_minimal()
+  theme_minimal()+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)
   
 print(p)
 ggsave(filename = "genre_dh.png", plot = p, width = 8, height = 6)
@@ -65,6 +72,22 @@ p<-ggplot(data_dh, aes(x = age, fill=age)) +
 print(p)
 ggsave(filename = "age_dh.png", plot = p, width = 8, height = 6)
 
+# Âge mais version tranches
+data_dh$age_group <- cut(data_dh$age, breaks = seq(0, max(data_dh$age, na.rm = TRUE), by = 5), right = FALSE)
+
+p <- ggplot(data_dh, aes(x = age_group, fill = age_group)) +
+  geom_bar() +
+  labs(title = "Distribution de la variable âge",
+       x = "Tranches d'âge",
+       y = "Nombre d'observations") +
+  scale_fill_brewer(palette = "Set3") +
+  theme_minimal() +
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)
+
+print(p)
+ggsave(filename = "age_dh_tranches.png", plot = p, width = 8, height = 6)
+
+
 
 
 
@@ -79,7 +102,8 @@ p<- ggplot(data_dh, aes(x = Situ_matri, fill=Situ_matri)) +
        y = "Nombre d'observations") +
   theme_minimal() +
   scale_fill_brewer(palette = "Accent")+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)
 print(p)
 ggsave(filename = "situ_matri_dh.png", plot = p, width = 8, height = 6)
 
@@ -96,6 +120,7 @@ p<- ggplot(data_dh, aes(x = Lieu_vie, fill=Lieu_vie)) +
   scale_fill_brewer(palette = "Accent")+
   theme_minimal() +
   theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
   coord_flip()
 
 print(p)
@@ -122,6 +147,7 @@ p<- ggplot(data_dh, aes(x = dipl_niv_short, fill=dipl_niv_short)) +
   scale_fill_brewer(palette = "Accent")+
   theme_minimal() +
   theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
   coord_flip()
 print(p)
 ggsave(filename = "diplome_dh.png", plot = p, width = 8, height = 6)
@@ -142,6 +168,7 @@ p<- ggplot(data_dh, aes(x = Type_etudsup, fill=Type_etudsup)) +
   theme_minimal() +
   scale_fill_brewer(palette = "Accent")+
   theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
   coord_flip()
 
 print(p)
@@ -174,6 +201,26 @@ ggsave(filename = "etude_sup_pourcentage_dh.png", plot = p, width = 8, height = 
 
 
 #Discipline du cursus:
+data_dh <- data_dh %>%
+  mutate(Spe_etudsup= case_when(
+    Spe_etudsup == "Sciences humaines et sociales (histoire, sociologie, philosophie, psychologie, sciences politiques, ...)" ~ "Sciences humaines et sociales",
+    TRUE ~ Spe_etudsup
+  ))
+p<- ggplot(data_dh, aes(x = Spe_etudsup, fill=Spe_etudsup)) +
+  geom_bar() +
+  labs(title = "Domaine d'études supérieures",
+       x = "catégorie",
+       y = "Nombre d'observations") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Accent")+
+  theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
+  coord_flip()
+
+print(p)
+ggsave(filename = "discipline_dh_eff.png", plot = p, width = 8, height = 6)
+
+
 
 filtered_data <- data_dh %>%
   mutate(Spe_etudsup= case_when(
@@ -221,6 +268,7 @@ p<-ggplot(data_dh, aes(x = Emp_cont_short, fill=Emp_cont_short)) +
   theme_minimal() +
   scale_fill_brewer(palette = "Accent")+
   theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
   coord_flip()
 
 print(p)
@@ -231,6 +279,24 @@ ggsave(filename = "statut_emploi_dh.png", plot = p, width = 8, height = 6)
 
 
 #Type de cadre
+data_dh <- data_dh %>%
+  mutate(cadre_inout = ifelse(is.na(cadre_inout), "NA", cadre_inout))
+p<- ggplot(data_dh, aes(x = cadre_inout, fill=cadre_inout)) +
+  geom_bar() +
+  labs(title = "Type de cadre",
+       x = "catégorie",
+       y = "Nombre d'observations") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Accent")+
+  theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
+  coord_flip()
+
+print(p)
+ggsave(filename = "type_cadre_eff_dh.png", plot = p, width = 8, height = 6)
+
+
+
 
 filtered_data <- data_dh %>%
   filter(!is.na(cadre_inout)) %>%
@@ -301,6 +367,24 @@ ggsave(filename = "emploi_cons_purcentage_dh.png", plot = p, width = 8, height =
 
 
 #Niveau hiérarchique 
+data_dh <- data_dh %>%
+  mutate(Emp_statut = ifelse(is.na(Emp_statut), "NA", Emp_statut))
+p<- ggplot(data_dh, aes(x = Emp_statut, fill=Emp_statut)) +
+  geom_bar() +
+  labs(title = "Niveau hiérarchique",
+       x = "catégorie",
+       y = "Nombre d'observations") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Accent")+
+  theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
+  coord_flip()
+
+print(p)
+ggsave(filename = "niveau_hiérarchique_eff_dh.png", plot = p, width = 8, height = 6)
+
+
+
 filtered_data <- data_dh %>%
   filter(!is.na(Emp_statut)) %>%
   group_by(Emp_statut) %>%
@@ -409,6 +493,7 @@ p<- ggplot(data_dh, aes(x = Org_type, fill=Org_type)) +
   theme_minimal() +
   scale_fill_brewer(palette = "Accent")+
   theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
   coord_flip()
   
 print(p)
@@ -431,6 +516,7 @@ p<- ggplot(filtered_data, aes(x = Emp_statut, fill=Emp_statut)) +
   theme_minimal() +
   scale_fill_brewer(palette = "Accent")+
   theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
   coord_flip()
 
 print(p)
@@ -454,6 +540,7 @@ p<-ggplot(filtered_data, aes(x = Emp_statut_cons, fill=Emp_statut_cons)) +
   theme_minimal() +
   scale_fill_brewer(palette = "Accent")+
   theme(legend.position = "none")+
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
   coord_flip()
 
 print(p)
@@ -475,6 +562,23 @@ p<-ggplot(data_dh, aes(x = Prem_contrat_annee)) +
 print(p)
 ggsave(filename = "premier_emploi_dh.png", plot = p, width = 8, height = 6)
 
+#version tranches
+
+data_dh$age_group <- cut(data_dh$Prem_contrat_annee, breaks = seq(0, max(data_dh$Prem_contrat_annee, na.rm = TRUE), by = 5), right = FALSE)
+
+p <- ggplot(data_dh, aes(x = age_group, fill = age_group)) +
+  geom_bar() +
+  labs(title = "Premier CDD ou CDI",
+       x = "Tranches d'années",
+       y = "Nombre d'observations") +
+  scale_fill_brewer(palette = "Set3") +
+  theme_minimal() +
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5)+
+  coord_flip()
+
+print(p)
+ggsave(filename = "prem_emploi_dh_tranches.png", plot = p, width = 8, height = 6)
+
 
 
 
@@ -488,6 +592,8 @@ p<- ggplot(data_dh, aes(x = Prem_rse_annee_rec)) +
 
 print(p)
 ggsave(filename = "premier_rse_dh.png", plot = p, width = 8, height = 6)
+
+
 
 unique_values <- unique(data$Emp_cont)
 print(unique_values)
