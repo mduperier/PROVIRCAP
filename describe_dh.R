@@ -593,7 +593,81 @@ p<- ggplot(data_dh, aes(x = Prem_rse_annee_rec)) +
 print(p)
 ggsave(filename = "premier_rse_dh.png", plot = p, width = 8, height = 6)
 
+#Temps consacré à la rse
+create_bar_plot(data_dh, "Rse_tps_rec", "temps_rse_dh.png")
 
+#Emp sec
+create_bar_plot(data_dh, "Emp_sec", "secteur_dh.png")
+
+#Temps plein
+create_bar_plot(data_dh, "Trav_tps", "temps_plein_dh.png")
+
+#Multinationale
+create_bar_plot(data_dh, "Org_multi", "multinationale_dh.png")
+
+#Salariés français
+create_bar_plot(data_dh, "Org_N", "salaries_fr_dh.png")
+
+#Salariés international
+create_bar_plot(data_dh, "Org_N_int", "salaries_int_dh.png")
+
+#Secteur d'activité
+library(forcats)
+
+
+# Filtrage et calcul des pourcentages
+filtered_data <- data_dh %>%
+  filter(!is.na(Org_sec)) %>%
+  group_by(Org_sec) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100) %>%
+  arrange(desc(percentage)) # Tri décroissant par pourcentage
+
+# Réordonner les facteurs selon le pourcentage
+filtered_data <- filtered_data %>%
+  mutate(Org_sec = fct_reorder(Org_sec, percentage, .desc = TRUE))
+
+# Création du diagramme en bâtons
+p <- ggplot(filtered_data, aes(x = Org_sec, y = percentage, fill = Org_sec)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), vjust = -0.5) + # Ajuste la position verticale des étiquettes
+  scale_fill_viridis(discrete = TRUE, option = "D") +
+  theme(axis.text.x = element_blank()) +
+  theme(legend.position = "right") +
+  labs(x = NULL, y = "Pourcentage", title = "Secteur d'activité")
+
+# Affichage du graphique
+print(p)
+ggsave(filename = "activ_sec_dh.png", plot = p, width = 8, height = 6)
+
+#Département RSE?
+create_bar_plot(data_dh, "Dep_rse", "dep_rse_dh.png")
+
+#Niveau du département RSE
+data_dh <- data_dh %>%
+  mutate(Dep_rse_multi = case_when(
+    Dep_rse_multi == "d'un·e département/équipe au niveau international/corporate" ~ "niveau international/corporate",
+    Dep_rse_multi == "d'un·e département/équipe au niveau international/corporate et d'un·e autre au niveau France" ~ "niveau international/corporate et niveau France",
+    Dep_rse_multi == "d'un·e département/équipe au niveau France" ~ "niveau France",
+    TRUE ~ Dep_rse_multi  # Pour garder les autres valeurs inchangées
+  ))
+
+create_bar_plot(data_dh, "Dep_rse_multi", "dep_rse_niv_dh.png")
+
+#Terme RSE
+create_bar_plot(data_dh, "Rse_mot", "mot_rse_dh.png")
+
+#Lois RSE
+create_bar_plot(data_dh, "Rse_lois", "lois_dh.png")
+
+#Vocation
+create_bar_plot(data_dh, "Rse_vocation_rec", "vocation_dh.png")
+
+#Critiques ONG
+create_bar_plot(data_dh, "Rse_ong_milit_rec", "critiques_dh.png")
+
+#Position politique 
+create_bar_plot(data_dh, "Pol_pos_SQ001", "politique_dh.png")
 
 unique_values <- unique(data$Emp_cont)
 print(unique_values)

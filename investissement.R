@@ -33,6 +33,7 @@ create_bar_plot <- function(data, variable, file_name) {
     scale_fill_brewer(palette = "Accent") +
     theme_minimal() +
     geom_text(stat = "count", aes_string(label = "..count.."), vjust = -0.5)+
+    theme(legend.position = "none")+
     coord_flip()
   
   print(p)
