@@ -613,6 +613,9 @@ create_bar_plot(data_dh, "Org_N_int", "salaries_int_dh.png")
 
 #Secteur d'activité
 library(forcats)
+install.packages("viridis")
+library(viridis)
+
 
 
 # Filtrage et calcul des pourcentages
@@ -668,6 +671,10 @@ create_bar_plot(data_dh, "Rse_ong_milit_rec", "critiques_dh.png")
 
 #Position politique 
 create_bar_plot(data_dh, "Pol_pos_SQ001", "politique_dh.png")
+
+#Missions
+create_bar_plot(data_dh, "Rse_miss", "mission_dh.png")
+
 
 unique_values <- unique(data$Emp_cont)
 print(unique_values)
