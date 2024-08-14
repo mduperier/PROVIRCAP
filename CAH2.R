@@ -28,7 +28,7 @@ plot(hc, main = "Dendrogramme de la Classification Ascendante Hiérarchique", xl
 
 # Découper le dendrogramme pour obtenir les groupes
 # Par exemple, on veut 6 groupes
-groups <- cutree(hc, k = 3)
+groups <- cutree(hc, k = 6)
 
 # Ajouter les groupes aux données d'origine
 data$group <- groups
@@ -41,7 +41,7 @@ table(data$group)
 
 
 dend <- as.dendrogram(hc)
-dend_colored <- color_branches(dend, k = 3)
+dend_colored <- color_branches(dend, k = 6)
 plot(dend_colored, main = "Dendrogramme coloré par groupes", leaflab = "none")
 
 
@@ -63,12 +63,14 @@ t_rem <- data %>%
   group_by(group) %>%
   summarise(
     mean_rem = mean(Rem_annuel, na.rm = TRUE),
+    med_rem = median(Rem_annuel, na.rm = TRUE),
     min_rem = min(Rem_annuel, na.rm = TRUE),
     max_rem = max(Rem_annuel, na.rm = TRUE),
     sd_rem = sd(Rem_annuel, na.rm = TRUE)
   )
 
 print(t_rem)
+
 
 
 gender_distribution <- data %>%
@@ -90,3 +92,48 @@ p<-ggplot(gender_distribution, aes(x = group, y = percentage, fill = Genre)) +
 
 print(p)
 ggsave(filename = "genre_dendo.png", plot = p, width = 8, height = 6)
+
+
+
+
+gender_distribution <- data %>%
+  filter(!is.na(group))%>%
+  group_by(group, Emp_statut_rec3) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100) %>%
+  ungroup()
+
+p<-ggplot(gender_distribution, aes(x = group, y = percentage, fill = Emp_statut_rec3)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Répartition du statut d'emploi par groupe",
+       x = "Groupe",
+       y = "Pourcentage",
+       fill = "Statut") +
+  theme_minimal()
+
+print(p)
+ggsave(filename = "statut_dendo6.png", plot = p, width = 8, height = 6)
+
+groupe3 <- data %>%
+  filter(group == 3)
+
+groupe3$Emp_statut_rec3
+
+gender_distribution <- data %>%
+  filter(!is.na(group))%>%
+  group_by(group, Rse_miss) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100) %>%
+  ungroup()
+
+p<-ggplot(gender_distribution, aes(x = group, y = percentage, fill = Rse_miss)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = paste0(round(percentage), "%")), position = position_stack(vjust = 0.5)) +
+  labs(title = "Répartition des missions par groupe",
+       x = "Groupe",
+       y = "Pourcentage",
+       fill = "Missions") +
+  theme_minimal()
+print(p)
+ggsave(filename = "dendo6.png", plot = p, width = 8, height = 6)
